@@ -1,9 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
-
+const bodyParser = require("body-parser");
 const app = express();
 
 const URL = require("./config/creds").mongoURL;
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 mongoose
   .connect(
@@ -18,7 +20,9 @@ mongoose
   });
 
 const user = require("./routes/api/users");
+const profile = require("./routes/api/profile");
 
+app.use("/api/profile", profile);
 app.use("/api/users", user);
 
 app.get("/", (req, res) => {
@@ -26,7 +30,6 @@ app.get("/", (req, res) => {
 });
 
 const PORT = 3000 || process.env.PORT;
-
 app.listen(PORT, () => {
   console.log(`Server started on ${PORT}`);
 });
