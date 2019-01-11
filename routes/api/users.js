@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
 
 const User = require("../../models/User");
 
@@ -52,12 +54,29 @@ router.post("/register", (req, res) => {
 @access - public
 */
 
+const key = require("../../config/creds").secret;
+
 router.post("/login", (req, res) => {
   User.findOne({ email: req.body.email })
     .then(user => {
       if (user) {
         if (user.password == req.body.password) {
-          res.json({ message: "Login Sucess" });
+          const payload = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            profilepic: user.profilepic
+          };
+          jwt.sign(
+            {
+              data: payload
+            },
+            key,
+            { expiresIn: "1h" },
+            (err, token) => {
+              res.json({ success: true, token: "Bearer " + token });
+            }
+          );
         } else {
           res.json({ message: "Password wrong" });
         }
@@ -67,5 +86,25 @@ router.post("/login", (req, res) => {
     })
     .catch(err => console.log("Login route error " + err));
 });
+
+/*
+type: post
+@route - /api/users/login
+@desc - login route
+@access - private
+*/
+
+router.post(
+  "/profile",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.send({
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      profilepic: req.user.profilpic
+    });
+  }
+);
 
 module.exports = router;
