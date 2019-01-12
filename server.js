@@ -29,6 +29,10 @@ const profile = require("./routes/api/profile");
 app.use("/api/profile", profile);
 app.use("/api/users", user);
 
+app.get("/", (req, res) => {
+  res.send("Welcome to TheConneqtor");
+});
+
 const PORT = 3000 || process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server started on ${PORT}`);
