@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to TheConneqtor");
 });
 
-const PORT = 3000 || process.env.PORT;
+const PORT = 5005 || process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server started on ${PORT}`);
 });
